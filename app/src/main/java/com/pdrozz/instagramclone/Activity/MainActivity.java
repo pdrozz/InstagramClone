@@ -1,10 +1,11 @@
-package com.pdrozz.instagramclone;
+package com.pdrozz.instagramclone.Activity;
 
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.pdrozz.instagramclone.R;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
