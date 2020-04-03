@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:text="INSTAGRAM"
         android:textColor="#FFFFFF"
-        android:textSize="42sp"
+        android:textSize="52sp"
 
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
