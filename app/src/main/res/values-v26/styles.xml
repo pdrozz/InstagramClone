@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="BottomNav" parent="Widget.Design.BottomNavigationView">
+        <item name="android:constantSize">true</item>
+        <item name="android:showText">false</item>
+        <item name="android:colorPrimary">#6AFF00</item>
+        <item name="itemBackground">@color/colorPrimaryDark</item>
+        <item name="android:tint">#0054FF</item>
+        <item name="labelVisibilityMode">unlabeled</item>
+    </style>
+</resources>
