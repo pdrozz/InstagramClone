@@ -12,14 +12,26 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="com.pdrozz.instagramclone.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
+        android:id="@+id/navigation_search"
+        android:name="com.pdrozz.instagramclone.ui.search.SearchFragment"
+        android:label="@string/title_search"
         tools:layout="@layout/fragment_dashboard" />
+
+    <fragment
+        android:id="@+id/navigation_add"
+        android:name="com.pdrozz.instagramclone.ui.add.AddFragment"
+        android:label="@string/title_add"
+        tools:layout="@layout/fragment_notifications" />
 
     <fragment
         android:id="@+id/navigation_notifications"
         android:name="com.pdrozz.instagramclone.ui.notifications.NotificationsFragment"
         android:label="@string/title_notifications"
+        tools:layout="@layout/fragment_notifications" />
+
+    <fragment
+        android:id="@+id/navigation_user"
+        android:name="com.pdrozz.instagramclone.ui.user.UserFragment"
+        android:label="@string/title_user"
         tools:layout="@layout/fragment_notifications" />
 </navigation>
