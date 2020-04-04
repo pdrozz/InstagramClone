@@ -1,4 +1,4 @@
-package com.pdrozz.instagramclone.Activity;
+package com.pdrozz.instagramclone.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -22,8 +21,6 @@ import com.pdrozz.instagramclone.model.UserModel;
 import com.pdrozz.instagramclone.utils.Datetime;
 import com.pdrozz.instagramclone.utils.MyPreferences;
 import com.pdrozz.instagramclone.utils.TextFormat;
-
-import java.util.UUID;
 
 public class RegistrarActivity extends AppCompatActivity {
 
