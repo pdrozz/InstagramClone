@@ -15,9 +15,8 @@
         android:id="@+id/nav_view"
         style="@style/BottomNav"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="60dp"
         android:background="#ffffff"
-
         app:itemBackground="@android:color/transparent"
         app:itemTextColor="#ffffff"
         app:layout_constraintBottom_toBottomOf="parent"

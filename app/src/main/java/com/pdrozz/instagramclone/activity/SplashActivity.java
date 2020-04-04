@@ -1,4 +1,4 @@
-package com.pdrozz.instagramclone.Activity;
+package com.pdrozz.instagramclone.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 

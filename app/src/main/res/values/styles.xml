@@ -10,6 +10,11 @@
 
     </style>
 
+    <style name="BgButton" parent="Widget.AppCompat.ImageButton">
+        <item name="android:background">@android:color/transparent</item>
+
+    </style>
+
     <style name="BottomNav" parent="Widget.Design.BottomNavigationView">
         <item name="android:constantSize">true</item>
         <item name="android:showText">false</item>

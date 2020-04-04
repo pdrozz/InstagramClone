@@ -1,11 +1,12 @@
-package com.pdrozz.instagramclone.Activity;
+package com.pdrozz.instagramclone.activity;
 
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.MenuItem;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.pdrozz.instagramclone.R;
+import com.squareup.picasso.Picasso;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,6 +28,8 @@ public class MainActivity extends AppCompatActivity {
         toolbar=findViewById(R.id.toolbarMain);
         setSupportActionBar(toolbar);
         BottomNavigationView navView = findViewById(R.id.nav_view);
+
+
 
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.navigation_home, R.id.navigation_search, R.id.navigation_add
