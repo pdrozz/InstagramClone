@@ -15,8 +15,12 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.pdrozz.instagramclone.FirebaseAuth.FirebaseAuthManager;
 import com.pdrozz.instagramclone.R;
+import com.pdrozz.instagramclone.utils.MyPreferences;
 import com.pdrozz.instagramclone.utils.TextFormat;
 
 public class LoginActivity extends AppCompatActivity {
@@ -78,6 +82,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onSuccess(AuthResult authResult) {
                 isLogado();
+
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -90,8 +95,10 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void isLogado(){
-        if (authManager.getCurrentUser()!=null){
+        FirebaseUser user=authManager.getCurrentUser();
+        if (user!=null){
             Toast.makeText(this, "Logado com sucesso", Toast.LENGTH_SHORT).show();
+            setInfoProferences(user);
             startMain();
         }
     }
@@ -99,5 +106,11 @@ public class LoginActivity extends AppCompatActivity {
     private void startMain(){
         startActivity(new Intent(this,MainActivity.class));
         finish();
+    }
+
+    private void setInfoProferences(FirebaseUser user){
+        MyPreferences.salvarPreferencia(MyPreferences.idUser,user.getUid(),this);
+        MyPreferences.salvarPreferencia(MyPreferences.email,user.getEmail(),this);
+
     }
 }
