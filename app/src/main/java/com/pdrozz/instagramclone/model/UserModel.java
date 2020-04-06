@@ -1,10 +1,20 @@
 package com.pdrozz.instagramclone.model;
 
-public class UserModel {
+import java.io.Serializable;
 
-    private String nome,nickname,dataSignup,ultimoLogin,stats,bio,urlfoto;
+public class UserModel implements Serializable {
+
+    private String nome,nickname,dataSignup,ultimoLogin,stats,bio,urlfoto,id;
 
     public UserModel() {
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getNome() {

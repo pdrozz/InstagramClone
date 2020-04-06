@@ -38,7 +38,7 @@
             app:layout_constraintTop_toBottomOf="@+id/profile_image" />
 
         <TextView
-            android:id="@+id/textView3"
+            android:id="@+id/textBio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -53,7 +53,7 @@
             app:layout_constraintTop_toBottomOf="@+id/txtNomePerfil" />
 
         <Button
-            android:id="@+id/nEditarPerfil"
+            android:id="@+id/EditarPerfil"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -63,7 +63,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView3" />
+            app:layout_constraintTop_toBottomOf="@+id/textBio" />
 
         <TextView
             android:id="@+id/textView4"
@@ -136,6 +136,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Seguir"
+            android:background="@drawable/bg_stroke_button"
             app:layout_constraintEnd_toStartOf="@+id/btnMensagem"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
@@ -148,20 +149,32 @@
             android:layout_marginTop="16dp"
             android:layout_marginBottom="8dp"
             android:text="Mensagem"
+            android:background="@drawable/bg_stroke_button"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btnMore"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/btnSeguir"
-            app:layout_constraintTop_toBottomOf="@+id/textView3" />
+            app:layout_constraintTop_toBottomOf="@+id/textBio" />
 
         <Button
             android:id="@+id/btnMore"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="@+id/btnMensagem"
+            android:background="@drawable/bg_stroke_button"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/btnMensagem" />
+
+        <TextView
+            android:id="@+id/nickname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="'@pedro'"
+            android:textSize="16sp"
+            app:layout_constraintBaseline_toBaselineOf="@+id/txtNomePerfil"
+            app:layout_constraintStart_toEndOf="@+id/txtNomePerfil" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

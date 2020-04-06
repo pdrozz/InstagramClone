@@ -12,7 +12,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.NewPostActivity"></activity>
+        <activity android:name=".activity.UserActivity"></activity>
+        <activity android:name=".activity.NewPostActivity" />
         <activity android:name=".activity.PostDetailsActivity" />
         <activity android:name=".activity.RegistrarActivity" />
         <activity android:name=".activity.LoginActivity" />

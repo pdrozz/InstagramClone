@@ -16,8 +16,6 @@ import com.pdrozz.instagramclone.model.UserModel;
 
 import java.util.List;
 
-import de.hdodenhof.circleimageview.CircleImageView;
-
 public class AdapterSearchUsers extends RecyclerView.Adapter<AdapterSearchUsers.MeuViewHolderSearchUsers> {
 
     private List<UserModel> listUsers;

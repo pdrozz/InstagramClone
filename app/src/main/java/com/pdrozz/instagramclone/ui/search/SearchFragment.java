@@ -1,5 +1,6 @@
 package com.pdrozz.instagramclone.ui.search;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -7,12 +8,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,27 +28,42 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.pdrozz.instagramclone.R;
+import com.pdrozz.instagramclone.activity.UserActivity;
 import com.pdrozz.instagramclone.adapter.AdapterSearchUsers;
 import com.pdrozz.instagramclone.adapter.AdapterTrendsPosts;
 import com.pdrozz.instagramclone.model.PostModel;
 import com.pdrozz.instagramclone.model.UserModel;
+import com.pdrozz.instagramclone.ui.otherUser.OtherUserFragment;
+import com.pdrozz.instagramclone.utils.RecyclerItemClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SearchFragment extends Fragment {
 
+    //widgets
     private EditText pesquisa;
-    private DatabaseReference reference= FirebaseDatabase.getInstance().getReference();
-    private ChildEventListener childEventListenerUsers;
-    private ChildEventListener childEventListenerPosts;
     private RecyclerView recyclerView;
+    private FrameLayout frameLayout;
+    //layouy manager
     private RecyclerView.LayoutManager linearLayoutManager;
     private RecyclerView.LayoutManager gridLayoutManager;
+    //firebase references
+    private DatabaseReference reference= FirebaseDatabase.getInstance().getReference();
+    //listeners
+    private ChildEventListener childEventListenerUsers;
+    private ChildEventListener childEventListenerTrendsPosts;
+    private TextWatcher textWatcher;
+    private RecyclerItemClickListener recyclerItemClickListener;
+    //lists
     private List<UserModel> listUsers=new ArrayList<>();
     private List<PostModel> listPosts=new ArrayList<>();
+    //adapters
     private AdapterTrendsPosts adapterTrendsPosts;
     private AdapterSearchUsers adapterSearch;
+    //Queries
+    final Query querySearch=reference.child("user");
+    final Query queryTrendsPosts=reference.child("posts").child("trends");
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -52,58 +71,99 @@ public class SearchFragment extends Fragment {
 
         pesquisa=root.findViewById(R.id.editSearch);
         recyclerView=root.findViewById(R.id.recyclerUserPostagens);
+        frameLayout=root.findViewById(R.id.frameSearch);
+        frameLayout.setVisibility(View.GONE);
 
         configListenerSearch();
         configListenerPosts();
-        final Query querySearch=reference.child("user");
-        final Query queryPosts=reference.child("posts").child("trends");
+        configTextWatcher();
 
+        //config adapters
+        adapterTrendsPosts=new AdapterTrendsPosts(listPosts,getActivity());
+        adapterSearch=new AdapterSearchUsers(listUsers,getActivity());
+        //recycler configs
         gridLayoutManager=new GridLayoutManager(getActivity(),3);
         linearLayoutManager=new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.setItemViewCacheSize(18);
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setHasFixedSize(true);
-        adapterTrendsPosts=new AdapterTrendsPosts(listPosts,getActivity());
-        adapterSearch=new AdapterSearchUsers(listUsers,getActivity());
         adapterTrendsPosts.setHasStableIds(true);
         recyclerView.setAdapter(adapterTrendsPosts);
+        configRecyclerClickListener();
 
 
-        queryPosts.limitToFirst(12).addChildEventListener(childEventListenerPosts);
+        queryTrendsPosts.limitToFirst(12).addChildEventListener(childEventListenerTrendsPosts);
 
-        pesquisa.addTextChangedListener(new TextWatcher() {
+        pesquisa.addTextChangedListener(textWatcher);
+
+        return root;
+    }
+
+    private void configRecyclerClickListener(){
+        recyclerItemClickListener=new RecyclerItemClickListener(
+                getActivity(),
+                recyclerView,
+                new RecyclerItemClickListener.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(View view, int position) {
+                        Intent i=new Intent(getActivity(), UserActivity.class);
+                        UserModel user=listUsers.get(position);
+                        i.putExtra("user",user);
+                        startActivity(i);
+
+                      /*  UserModel user=listUsers.get(position);
+                        OtherUserFragment otherUserFragment=new OtherUserFragment(user);
+                        FragmentTransaction transaction=getFragmentManager().beginTransaction();
+                        frameLayout.setVisibility(View.VISIBLE);
+                        transaction.replace(R.id.frameSearch,otherUserFragment);
+                        transaction.commit();
+                        Toast.makeText(getActivity(), "CLIQUE", Toast.LENGTH_SHORT).show();*/
+                    }
+
+                    @Override
+                    public void onLongItemClick(View view, int position) {
+
+                    }
+
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                    }
+                }
+        );
+    }
+
+    private void configTextWatcher() {
+        textWatcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 querySearch.removeEventListener(childEventListenerUsers);
+                recyclerView.removeOnItemTouchListener(recyclerItemClickListener);
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                querySearch.orderByChild("nickname").equalTo("@"+s.toString()).addChildEventListener(
+                querySearch.orderByChild("nickname").equalTo("@" + s.toString().toLowerCase()).addChildEventListener(
                         childEventListenerUsers);
-
+                recyclerView.addOnItemTouchListener(recyclerItemClickListener);
 
             }
 
             @Override
             public void afterTextChanged(Editable s) {
                 //recyclerView.setLayoutManager(linearLayoutManager);
+                queryTrendsPosts.removeEventListener(childEventListenerTrendsPosts);
             }
-        });
-
-        return root;
+        };
     }
 
     private void configListenerPosts(){
-        childEventListenerPosts=new ChildEventListener() {
+        childEventListenerTrendsPosts=new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 PostModel model=dataSnapshot.getValue(PostModel.class);
                 listPosts.add(model);
-                System.out.println("GETGET POST ENCOTNRADO");
-                System.out.println("GETGET POST KEY "+dataSnapshot.getKey());
-                System.out.println("GETGET URL FOTO "+model.getUrlfoto());
                 recyclerView.setAdapter(adapterTrendsPosts);
                 adapterTrendsPosts.notifyDataSetChanged();
             }
@@ -136,11 +196,16 @@ public class SearchFragment extends Fragment {
         childEventListenerUsers=new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                if(dataSnapshot.exists()){
                 UserModel model=dataSnapshot.getValue(UserModel.class);
-                listUsers.add(model);
-                recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-                recyclerView.setAdapter(adapterSearch);
-                adapterSearch.notifyDataSetChanged();
+                if(!listUsers.contains(model)){
+                    model.setId(dataSnapshot.getKey());
+                    listUsers.add(model);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                    recyclerView.setAdapter(adapterSearch);
+                    adapterSearch.notifyDataSetChanged();
+                    }
+                }
             }
 
             @Override
