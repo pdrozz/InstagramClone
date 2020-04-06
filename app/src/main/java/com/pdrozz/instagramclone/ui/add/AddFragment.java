@@ -135,7 +135,7 @@ public class AddFragment extends Fragment {
         ByteArrayOutputStream baos=new ByteArrayOutputStream();
         imagem.compress(Bitmap.CompressFormat.JPEG,70,baos);
         final StorageReference imagemRef=storageReference.child("imagens").child("users").child(ID)
-                .child("post"+postId+".jpeg");
+                .child("post").child("post"+postId+".jpeg");
         byte[] bytes=baos.toByteArray();
 
         UploadTask uploadTask=imagemRef.putBytes(bytes);
@@ -166,7 +166,7 @@ public class AddFragment extends Fragment {
             @Override
             public void onSuccess(Uri uri) {
                 model.setUrlfoto(uri.toString());
-                databaseReference.child("user").child(ID).child("posts").child(IDpost).setValue(model);
+                databaseReference.child("posts").child(ID).child(IDpost).setValue(model);
             }
         });
     }

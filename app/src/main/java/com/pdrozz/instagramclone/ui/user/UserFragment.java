@@ -87,7 +87,7 @@ public class UserFragment extends Fragment {
 
 
         setupChildEvent();
-        Query q=reference.child("user").child(ID).child("posts");
+        Query q=reference.child("posts").child(ID);
         q.addChildEventListener(childEventListener);
 
 
