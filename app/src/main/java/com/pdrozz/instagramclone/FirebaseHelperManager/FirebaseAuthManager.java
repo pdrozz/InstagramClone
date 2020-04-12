@@ -1,4 +1,4 @@
-package com.pdrozz.instagramclone.FirebaseAuth;
+package com.pdrozz.instagramclone.FirebaseHelperManager;
 
 import android.app.Activity;
 import android.widget.Toast;

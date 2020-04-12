@@ -18,8 +18,9 @@
                 android:id="@+id/imageViewPost"
                 android:layout_width="match_parent"
                 android:layout_height="400dp"
-                android:scaleType="centerCrop"
+                android:cropToPadding="false"
 
+                android:scaleType="centerCrop"
                 app:srcCompat="@drawable/bg_gradient" />
 
 

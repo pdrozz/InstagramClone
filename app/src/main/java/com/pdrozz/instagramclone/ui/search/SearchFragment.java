@@ -7,16 +7,14 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -33,9 +31,9 @@ import com.pdrozz.instagramclone.adapter.AdapterSearchUsers;
 import com.pdrozz.instagramclone.adapter.AdapterTrendsPosts;
 import com.pdrozz.instagramclone.model.PostModel;
 import com.pdrozz.instagramclone.model.UserModel;
-import com.pdrozz.instagramclone.ui.otherUser.OtherUserFragment;
-import com.pdrozz.instagramclone.utils.RecyclerItemClickListener;
+import com.pdrozz.instagramclone.helper.RecyclerItemClickListener;
 
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -111,14 +109,6 @@ public class SearchFragment extends Fragment {
                         UserModel user=listUsers.get(position);
                         i.putExtra("user",user);
                         startActivity(i);
-
-                      /*  UserModel user=listUsers.get(position);
-                        OtherUserFragment otherUserFragment=new OtherUserFragment(user);
-                        FragmentTransaction transaction=getFragmentManager().beginTransaction();
-                        frameLayout.setVisibility(View.VISIBLE);
-                        transaction.replace(R.id.frameSearch,otherUserFragment);
-                        transaction.commit();
-                        Toast.makeText(getActivity(), "CLIQUE", Toast.LENGTH_SHORT).show();*/
                     }
 
                     @Override
@@ -144,8 +134,14 @@ public class SearchFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                querySearch.orderByChild("nickname").equalTo("@" + s.toString().toLowerCase()).addChildEventListener(
+                System.out.println("POSTPOST texto alterado");
+                String text="@"+s.toString().replace(" ","")
+                        .replace("@","");
+                System.out.println("POSTPOST text:"+text);
+                querySearch.orderByChild("nickname").equalTo(text).addChildEventListener(
                         childEventListenerUsers);
+                System.out.println("POSTPOST addOnItemTouch");
+                System.out.println("POSTPOST query "+querySearch.toString());
                 recyclerView.addOnItemTouchListener(recyclerItemClickListener);
 
             }
@@ -162,12 +158,15 @@ public class SearchFragment extends Fragment {
         childEventListenerTrendsPosts=new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                PostModel model=dataSnapshot.getValue(PostModel.class);
-                listPosts.add(model);
-                recyclerView.setAdapter(adapterTrendsPosts);
-                adapterTrendsPosts.notifyDataSetChanged();
+                if(dataSnapshot.exists()){
+                    PostModel model=dataSnapshot.getValue(PostModel.class);
+                    if(!listPosts.contains(model)) {
+                        listPosts.add(model);
+                        recyclerView.setAdapter(adapterTrendsPosts);
+                        adapterTrendsPosts.notifyDataSetChanged();
+                    }
+                }
             }
-
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
@@ -193,19 +192,25 @@ public class SearchFragment extends Fragment {
 
     private void configListenerSearch(){
         adapterSearch=new AdapterSearchUsers(listUsers,getActivity());
+        System.out.println("POSTPOST listener SEARCH ADICIONADO");
         childEventListenerUsers=new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                System.out.println("POSTPOST Inicio IF");
+                System.out.println("POSTPOST datasnapshot "+dataSnapshot.toString());
+                System.out.println("POSTPOST RESULTADO "+dataSnapshot.toString());
                 if(dataSnapshot.exists()){
-                UserModel model=dataSnapshot.getValue(UserModel.class);
-                if(!listUsers.contains(model)){
-                    model.setId(dataSnapshot.getKey());
-                    listUsers.add(model);
-                    recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-                    recyclerView.setAdapter(adapterSearch);
-                    adapterSearch.notifyDataSetChanged();
+                    UserModel model=dataSnapshot.getValue(UserModel.class);
+                    if (listUsers.contains(model)) {}else {
+                        System.out.println("POSTPOST Adicionando na lista search");
+                        model.setId(dataSnapshot.getKey());
+                        listUsers.add(model);
+                        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                        recyclerView.setAdapter(adapterSearch);
+                        adapterSearch.notifyDataSetChanged();
+
                     }
-                }
+                    }
             }
 
             @Override

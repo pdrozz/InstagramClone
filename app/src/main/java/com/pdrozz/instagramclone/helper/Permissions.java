@@ -1,4 +1,4 @@
-package com.pdrozz.instagramclone.utils;
+package com.pdrozz.instagramclone.helper;
 
 import android.app.Activity;
 import android.content.pm.PackageManager;

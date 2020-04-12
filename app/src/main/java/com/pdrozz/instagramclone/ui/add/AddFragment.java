@@ -2,7 +2,6 @@ package com.pdrozz.instagramclone.ui.add;
 
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -29,10 +28,11 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.pdrozz.instagramclone.R;
+import com.pdrozz.instagramclone.helper.HelperStorageManager;
 import com.pdrozz.instagramclone.model.PostModel;
 import com.pdrozz.instagramclone.utils.Datetime;
-import com.pdrozz.instagramclone.utils.MyPreferences;
-import com.pdrozz.instagramclone.utils.Permissions;
+import com.pdrozz.instagramclone.helper.MyPreferences;
+import com.pdrozz.instagramclone.helper.Permissions;
 
 import java.io.ByteArrayOutputStream;
 import java.util.UUID;
@@ -121,16 +121,7 @@ public class AddFragment extends Fragment {
         imageButton.setVisibility(View.GONE);
     }
 
-    private Bitmap getImagemUri(Uri local){
-        try{
-            Bitmap imagem=MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(),local);
-            return imagem;
-        }
-        catch (Exception e){
-            e.printStackTrace();
-            return null;
-        }
-    }
+
     private void uploadImagemPost(Bitmap imagem,final String postId,final String desc){
         ByteArrayOutputStream baos=new ByteArrayOutputStream();
         imagem.compress(Bitmap.CompressFormat.JPEG,70,baos);
@@ -146,7 +137,10 @@ public class AddFragment extends Fragment {
                 Toast.makeText(getActivity(), "Sucesso ao fazer postagem", Toast.LENGTH_SHORT).show();
                 btnPostar.setEnabled(true);
                 editDesc.setEnabled(true);
+                editDesc.setText("");
                 imageButton.setEnabled(true);
+                imageButton.setVisibility(View.VISIBLE);
+                imagemPost.setImageResource(R.drawable.bg_gradient);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -154,6 +148,7 @@ public class AddFragment extends Fragment {
                 Toast.makeText(getActivity(), "Erro ao fazer postagem", Toast.LENGTH_SHORT).show();
                 btnPostar.setEnabled(true);
                 editDesc.setEnabled(true);
+                imageButton.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -166,7 +161,7 @@ public class AddFragment extends Fragment {
             @Override
             public void onSuccess(Uri uri) {
                 model.setUrlfoto(uri.toString());
-                databaseReference.child("posts").child(ID).child(IDpost).setValue(model);
+                databaseReference.child("posts").child(ID).child("posts").child(IDpost).setValue(model);
             }
         });
     }
@@ -178,7 +173,7 @@ public class AddFragment extends Fragment {
             switch (requestCode){
                 case 100:
                     Uri local=data.getData();
-                    imagem=getImagemUri(local);
+                    imagem= HelperStorageManager.getImagemFromUri(local,getActivity());
                     imagemPost.setImageBitmap(imagem);
                     UID=UUID.randomUUID().toString();
                     break;

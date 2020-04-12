@@ -36,7 +36,7 @@ public class AdapterUserPost extends RecyclerView.Adapter<AdapterUserPost.MeuVie
 
     @Override
     public void onBindViewHolder(@NonNull MeuViewHolderUserPost holder, int position) {
-        Glide.with(c).load(listPost.get(position).getUrlfoto()).into(holder.imagePost);
+        Glide.with(c).load(listPost.get(position).getUrlfoto()).placeholder(R.drawable.bg_gradient).into(holder.imagePost);
         //Picasso.get().load(listPost.get(position).getUrlfoto()).into(holder.imagePost);
     }
 

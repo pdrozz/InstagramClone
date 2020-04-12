@@ -1,4 +1,4 @@
-package com.pdrozz.instagramclone.utils;
+package com.pdrozz.instagramclone.helper;
 
 import android.content.Context;
 import android.view.GestureDetector;

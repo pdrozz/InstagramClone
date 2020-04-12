@@ -15,11 +15,11 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.pdrozz.instagramclone.FirebaseAuth.FirebaseAuthManager;
+import com.pdrozz.instagramclone.FirebaseHelperManager.FirebaseAuthManager;
 import com.pdrozz.instagramclone.R;
 import com.pdrozz.instagramclone.model.UserModel;
 import com.pdrozz.instagramclone.utils.Datetime;
-import com.pdrozz.instagramclone.utils.MyPreferences;
+import com.pdrozz.instagramclone.helper.MyPreferences;
 import com.pdrozz.instagramclone.utils.TextFormat;
 
 public class RegistrarActivity extends AppCompatActivity {

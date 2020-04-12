@@ -3,15 +3,19 @@ package com.pdrozz.instagramclone.activity;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -26,8 +30,8 @@ import com.pdrozz.instagramclone.adapter.AdapterUserPost;
 import com.pdrozz.instagramclone.model.PostModel;
 import com.pdrozz.instagramclone.model.UserModel;
 import com.pdrozz.instagramclone.utils.Datetime;
-import com.pdrozz.instagramclone.utils.MyPreferences;
-import com.pdrozz.instagramclone.utils.RecyclerItemClickListener;
+import com.pdrozz.instagramclone.helper.MyPreferences;
+import com.pdrozz.instagramclone.helper.RecyclerItemClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,10 +46,11 @@ public class UserActivity extends AppCompatActivity {
     private AdapterUserPost adapter;
     private RecyclerView.LayoutManager layoutManager;
     //widget
-    private CircleImageView circleImageView;
+    private ImageView circleImageView;
     private TextView nome,nickname,bio,seguidores,seguindo,posts;
-    private Button editarPerfil,seguir,mensagem,more;
+    private Button seguir,mensagem,more;
     private RecyclerView recyclerView;
+    private Toolbar toolbar;
     //reference
     private DatabaseReference reference= FirebaseDatabase.getInstance().getReference();
     //queries
@@ -71,7 +76,6 @@ public class UserActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user);
-
         Bundle dados=getIntent().getExtras();
         user=(UserModel) dados.getSerializable("user");
         configWidgets();
@@ -79,10 +83,13 @@ public class UserActivity extends AppCompatActivity {
         setupChildListenerPosts();
         configRecyclerPostClick();
 
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        Glide.with(this).load(user.getUrlfoto()).into(circleImageView);
 
 
-
-        queryPosts=reference.child("posts").child(user.getId());
+        queryPosts=reference.child("posts").child(user.getId()).child("posts");
         queryPosts.addChildEventListener(childEventPosts);
 
     }
@@ -93,6 +100,7 @@ public class UserActivity extends AppCompatActivity {
                     public void onItemClick(View view, int position) {
                         Intent i=new Intent(getApplicationContext(), PostDetailsActivity.class);
                         i.putExtra("post",listPost.get(position));
+                        i.putExtra("nome",user.getNome());
                         startActivity(i);
                     }
 
@@ -114,8 +122,6 @@ public class UserActivity extends AppCompatActivity {
         childEventPosts=new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                System.out.println("KEYKEY "+dataSnapshot.getKey());
-                System.out.println("KEYKEY "+dataSnapshot.toString());
                 PostModel model=dataSnapshot.getValue(PostModel.class);
                 listPost.add(model);
                 recyclerView.setAdapter(adapter);
@@ -123,8 +129,6 @@ public class UserActivity extends AppCompatActivity {
             }
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                System.out.println("KEYKEY "+dataSnapshot.getKey());
-                System.out.println("KEYKEY "+dataSnapshot.toString());
                 PostModel model=dataSnapshot.getValue(PostModel.class);
                 listPost.add(model);
                 recyclerView.setAdapter(adapter);
@@ -152,14 +156,13 @@ public class UserActivity extends AppCompatActivity {
         seguidores=findViewById(R.id.contagemSeguidores);
         seguindo=findViewById(R.id.contagemSeguindo);
         posts=findViewById(R.id.contagemPublicacoes);
-
-        editarPerfil=findViewById(R.id.EditarPerfil);
-        editarPerfil.setVisibility(View.GONE);
         seguir=findViewById(R.id.btnSeguir);
         mensagem=findViewById(R.id.btnMensagem);
         more=findViewById(R.id.btnMore);
 
+
         recyclerView=findViewById(R.id.recyclerUserPostagens);
+        toolbar=findViewById(R.id.toolbarMain);
 
         adapter=new AdapterUserPost(listPost,this);
         layoutManager=new GridLayoutManager(getApplicationContext(),3);
@@ -174,21 +177,25 @@ public class UserActivity extends AppCompatActivity {
     private void loadUser(){
         if (user!=null){
             if (!user.getUrlfoto().equals("padrao")) {
-                Glide.with(this).load(user.getUrlfoto()).centerCrop().into(circleImageView);
+               // Glide.with(this).load(user.getUrlfoto()).centerCrop().into(circleImageView);
             }
-            configChildEventCountSeguindo();
+           /* configChildEventCountSeguindo();
             configChildEventCountPosts();
-            configChildEventCountSeguidores();
+            configChildEventCountSeguidores();*/
 
-
+            //getSupportActionBar().setTitle(user.getNickname());
+/*
             queryCountSeguidores=reference.child("user").child(user.getId()).child("seguidores");
             queryCountSeguidores.addChildEventListener(childEventCountSeguidores);
+
 
             queryCountSeguindo=reference.child("user").child(user.getId()).child("seguindo");
             queryCountSeguindo.addChildEventListener(childEventCountSeguindo);
 
+
             queryCountPosts=reference.child("posts").child(user.getId());
             queryCountPosts.addChildEventListener(childEventCountPosts);
+*/
 
             configButtonSeguirListener(user);
 
@@ -196,40 +203,54 @@ public class UserActivity extends AppCompatActivity {
             nome.setText(user.getNome());
             nickname.setText(user.getNickname());
             bio.setText(user.getBio());
+
+
         }
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        queryCountPosts.removeEventListener(childEventCountPosts);
+        queryCountSeguindo.removeEventListener(childEventCountSeguindo);
+        queryCountSeguidores.removeEventListener(childEventCountSeguidores);
+    }
 
     private void configButtonSeguirListener(final UserModel user){
         final Activity activity=this;
         seguir.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                String currentIdUser=MyPreferences.recuperarPreferencia(MyPreferences.idUser,
+                        activity);
                 if(textbtn==0){
                     seguir.setText("Seguindo");
                     textbtn++;
+                    follow(currentIdUser);
 
-                    //config seguindo
-                    reference.child("user").child(user.getId()).child("seguidores").child(user.getId())
-                            .setValue(Datetime.getDateToday());
-                    reference.child("user").child(MyPreferences.recuperarPreferencia(MyPreferences.idUser,
-                            activity)).child("seguindo").child(user.getId())
-                            .setValue(user.getDataSignup());
                 }else {
                     seguir.setText("Seguir");
                     textbtn--;
-                    //config seguindo
-                    reference.child("user").child(user.getId()).child("seguidores").child(user.getId())
-                            .removeValue();
-                    reference.child("user").child(MyPreferences.recuperarPreferencia(MyPreferences.idUser,
-                            activity)).child("seguindo").child(user.getId())
-                            .removeValue();
+                    unfollow(currentIdUser);
+
                 }
             }
         });
     }
 
+    private void follow(String currentIdUser){
+        reference.child("seguindo").child(currentIdUser).child("seguindo").child(user.getId())
+                .child("id").setValue(user.getId());
+        reference.child("seguidores").child(user.getId()).child("seguidores").child(currentIdUser)
+                .child("id").setValue(currentIdUser);
+    }
+
+    private void unfollow(String currentIdUser){
+        reference.child("seguindo").child(currentIdUser).child("seguindo").child(user.getId())
+                .child("id").removeValue();
+        reference.child("seguidores").child(user.getId()).child("seguidores").child(currentIdUser)
+                .child("id").removeValue();
+    }
 
 
     private void configChildEventCountPosts(){

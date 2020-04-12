@@ -2,8 +2,10 @@ package com.pdrozz.instagramclone.activity;
 
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -16,11 +18,15 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.pdrozz.instagramclone.FirebaseAuth.FirebaseAuthManager;
+import com.pdrozz.instagramclone.FirebaseHelperManager.FirebaseAuthManager;
 import com.pdrozz.instagramclone.R;
-import com.pdrozz.instagramclone.utils.MyPreferences;
+import com.pdrozz.instagramclone.helper.MyPreferences;
+import com.pdrozz.instagramclone.model.UserModel;
 import com.pdrozz.instagramclone.utils.TextFormat;
 
 public class LoginActivity extends AppCompatActivity {
@@ -32,6 +38,8 @@ public class LoginActivity extends AppCompatActivity {
     //Auth
     private FirebaseAuthManager authManager;
     private View.OnClickListener loginListener;
+    private ChildEventListener dadosListener;
+    private DatabaseReference reference= FirebaseDatabase.getInstance().getReference("user");
 
     private String stringEmail,stringSenha;
 
@@ -46,6 +54,7 @@ public class LoginActivity extends AppCompatActivity {
         authManager=new FirebaseAuthManager(this);
 
         configListener();
+        configDadosListener();
         btnLogin.setOnClickListener(loginListener);
 
 
@@ -99,6 +108,9 @@ public class LoginActivity extends AppCompatActivity {
         if (user!=null){
             Toast.makeText(this, "Logado com sucesso", Toast.LENGTH_SHORT).show();
             setInfoProferences(user);
+            DatabaseReference ref=reference.child(user.getUid());
+            ref.addChildEventListener(dadosListener);
+
             startMain();
         }
     }
@@ -112,5 +124,66 @@ public class LoginActivity extends AppCompatActivity {
         MyPreferences.salvarPreferencia(MyPreferences.idUser,user.getUid(),this);
         MyPreferences.salvarPreferencia(MyPreferences.email,user.getEmail(),this);
 
+
+
+
     }
+    private void configDadosListener(){
+        final Activity activity=this;
+        dadosListener=new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                if (dataSnapshot.exists()){
+                    System.out.println("POSTPOST "+dataSnapshot.getValue().toString());
+                    switch (dataSnapshot.getKey()){
+
+                        case "bio":
+                            MyPreferences.salvarPreferencia(MyPreferences.bio,
+                                    dataSnapshot.getValue().toString(),activity);
+                            break;
+                        case "nome":
+                            MyPreferences.salvarPreferencia(MyPreferences.nome,
+                                    dataSnapshot.getValue().toString(),activity);
+                            break;
+                        case "urlfoto":
+                            MyPreferences.salvarPreferencia(MyPreferences.uriFotoPerfil,
+                                    dataSnapshot.getValue().toString(),activity);
+                            break;
+                        case "nickname":
+                            MyPreferences.salvarPreferencia(MyPreferences.nickname,
+                                    dataSnapshot.getValue().toString(),activity);
+                            break;
+                    }
+
+
+
+
+
+
+                }
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+
+    }
+
 }

@@ -26,14 +26,10 @@ public class PostDetailsActivity extends AppCompatActivity {
 
         Bundle dados=getIntent().getExtras();
         PostModel model=(PostModel)dados.get("post");
+        String nome=dados.getString("nome");
 
-        image=findViewById(R.id.imageViewPost);
-        author=findViewById(R.id.txtNomePerfil);
-        desc=findViewById(R.id.descricao);
+        configWidgets();
 
-        like=findViewById(R.id.buttonLike);
-        comment=findViewById(R.id.buttonComment);
-        send=findViewById(R.id.buttonSendPost);
 
         like.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -53,7 +49,21 @@ public class PostDetailsActivity extends AppCompatActivity {
             }
         });
         desc.setText(model.getDesc());
-        Picasso.get().load(model.getUrlfoto()).into(image);
+        author.setText(nome);
+        Picasso.get().load(model.getUrlfoto()).placeholder(R.drawable.bg_gradient).into(image);
+    }
+
+
+
+    private void configWidgets(){
+        image=findViewById(R.id.imageViewPost);
+        author=findViewById(R.id.txtNomePerfil);
+        desc=findViewById(R.id.descricao);
+
+        like=findViewById(R.id.buttonLike);
+        comment=findViewById(R.id.buttonComment);
+        send=findViewById(R.id.buttonSendPost);
+
     }
 
 }
