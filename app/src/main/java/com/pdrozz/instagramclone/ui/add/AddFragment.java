@@ -56,7 +56,7 @@ public class AddFragment extends Fragment {
 
     private Bitmap imagem;
     public int GALERY=100;
-    private String ID,UID;
+    private String ID,UID,author;
     //permissions
     private String[] permissoes={Manifest.permission.READ_EXTERNAL_STORAGE};
     //firebase reference
@@ -81,6 +81,7 @@ public class AddFragment extends Fragment {
 
 
         ID= MyPreferences.recuperarPreferencia(MyPreferences.idUser,getActivity());
+        author=MyPreferences.recuperarPreferencia(MyPreferences.nome,getActivity());
 
         btnPostar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -161,6 +162,7 @@ public class AddFragment extends Fragment {
             @Override
             public void onSuccess(Uri uri) {
                 model.setUrlfoto(uri.toString());
+                model.setAuthor(author);
                 databaseReference.child("posts").child(ID).child("posts").child(IDpost).setValue(model);
             }
         });

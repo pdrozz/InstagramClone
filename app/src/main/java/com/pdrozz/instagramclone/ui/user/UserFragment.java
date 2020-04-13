@@ -3,7 +3,9 @@ package com.pdrozz.instagramclone.ui.user;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -110,6 +112,8 @@ public class UserFragment extends Fragment {
         pickUserValues();
 
 
+
+
         Permissions.getPermissions(permissoes,activity,200);
         configProfileIconClickListener();
 
@@ -127,12 +131,35 @@ public class UserFragment extends Fragment {
 
         return v;
     }
+    private void alertCamOrStorage(){
+        AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
+        builder.setTitle("Trocar o ícone de perfil usando:");
+        builder.setPositiveButton("Camera", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        }).setNegativeButton("Armazenamento", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+
+    }
+
     private void pickUserValues(){
         uriFotoPerfil=MyPreferences.recuperarPreferencia(MyPreferences.uriFotoPerfil,activity);
+
+        File file=new File(getContext().getFilesDir(),"image_profile.jpeg");
+        Glide.with(getActivity()).load(file).into(ImageViewProfile);
 
         String stringNome=MyPreferences.recuperarPreferencia(MyPreferences.nome,activity);
         nome.setText(stringNome);
         ID= MyPreferences.recuperarPreferencia(MyPreferences.idUser,activity);
+    }
+    private void setUSerValues(){
+
     }
 
     private void configRecyclerPost(){

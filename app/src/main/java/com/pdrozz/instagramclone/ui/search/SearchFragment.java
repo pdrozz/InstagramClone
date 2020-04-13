@@ -26,6 +26,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.pdrozz.instagramclone.R;
+import com.pdrozz.instagramclone.activity.PostDetailsActivity;
 import com.pdrozz.instagramclone.activity.UserActivity;
 import com.pdrozz.instagramclone.adapter.AdapterSearchUsers;
 import com.pdrozz.instagramclone.adapter.AdapterTrendsPosts;
@@ -52,7 +53,8 @@ public class SearchFragment extends Fragment {
     private ChildEventListener childEventListenerUsers;
     private ChildEventListener childEventListenerTrendsPosts;
     private TextWatcher textWatcher;
-    private RecyclerItemClickListener recyclerItemClickListener;
+    private RecyclerItemClickListener recyclerUsuarioItemClickListener;
+    private RecyclerItemClickListener recyclerTrendItemClickListener;
     //lists
     private List<UserModel> listUsers=new ArrayList<>();
     private List<PostModel> listPosts=new ArrayList<>();
@@ -61,7 +63,7 @@ public class SearchFragment extends Fragment {
     private AdapterSearchUsers adapterSearch;
     //Queries
     final Query querySearch=reference.child("user");
-    final Query queryTrendsPosts=reference.child("posts").child("trends");
+    final Query queryTrendsPosts=reference.child("trends");
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -88,18 +90,46 @@ public class SearchFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         adapterTrendsPosts.setHasStableIds(true);
         recyclerView.setAdapter(adapterTrendsPosts);
-        configRecyclerClickListener();
-
+        recyclerUsuarioItemClickListener();
+        recyclerTrendItemClickListener();
 
         queryTrendsPosts.limitToFirst(12).addChildEventListener(childEventListenerTrendsPosts);
+
+        recyclerView.addOnItemTouchListener(recyclerTrendItemClickListener);
 
         pesquisa.addTextChangedListener(textWatcher);
 
         return root;
     }
 
-    private void configRecyclerClickListener(){
-        recyclerItemClickListener=new RecyclerItemClickListener(
+    private void recyclerTrendItemClickListener(){
+        recyclerTrendItemClickListener=new RecyclerItemClickListener(
+                getActivity(),
+                recyclerView,
+                new RecyclerItemClickListener.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(View view, int position) {
+                        Intent i=new Intent(getActivity(), PostDetailsActivity.class);
+                        PostModel post=listPosts.get(position);
+                        i.putExtra("user",post);
+                        startActivity(i);
+                    }
+
+                    @Override
+                    public void onLongItemClick(View view, int position) {
+
+                    }
+
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                    }
+                }
+        );
+    }
+
+    private void recyclerUsuarioItemClickListener(){
+        recyclerUsuarioItemClickListener=new RecyclerItemClickListener(
                 getActivity(),
                 recyclerView,
                 new RecyclerItemClickListener.OnItemClickListener() {
@@ -129,7 +159,7 @@ public class SearchFragment extends Fragment {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 querySearch.removeEventListener(childEventListenerUsers);
-                recyclerView.removeOnItemTouchListener(recyclerItemClickListener);
+                recyclerView.removeOnItemTouchListener(recyclerUsuarioItemClickListener);
             }
 
             @Override
@@ -142,7 +172,13 @@ public class SearchFragment extends Fragment {
                         childEventListenerUsers);
                 System.out.println("POSTPOST addOnItemTouch");
                 System.out.println("POSTPOST query "+querySearch.toString());
-                recyclerView.addOnItemTouchListener(recyclerItemClickListener);
+
+                recyclerView.removeOnItemTouchListener(recyclerTrendItemClickListener);
+                recyclerView.addOnItemTouchListener(recyclerUsuarioItemClickListener);
+
+                if (text.equals("")){
+                    recyclerView.removeOnItemTouchListener(recyclerUsuarioItemClickListener);
+                }
 
             }
 
