@@ -32,6 +32,7 @@
     <string name="hint_senha">Senha</string>
     <string name="hint_email">Email</string>
     <string name="hint_pesquisar">Pesquise</string>
+    <string name="hint_bio">Sua bio</string>
     <string name="hint_nome_sobrenome">Nome e sobrenome</string>
     <string name="hint_nome_usuario">"@Seu nome de usuário" ex: @Marcos_1992</string>
     <!-- PLACEHOLDER TEXTS-->
