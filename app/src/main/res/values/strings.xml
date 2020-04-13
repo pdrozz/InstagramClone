@@ -1,13 +1,49 @@
 <resources>
     <string name="app_name">InstagramClone</string>
 
-
+    <!-- TOOLBAR TEXTS-->
     <string name="title_home">Feed</string>
     <string name="title_user">Meu perfil</string>
     <string name="title_add">Adicionar</string>
     <string name="title_search">Pesquisar</string>
     <string name="title_notifications">Notificações</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- WIDGETS TEXTS-->
+
+    <!-- TEXTVIEW TEXTS-->
+    <string name="instagram">INSTAGRAM</string>
+    <string name="text_sign_up">Não possui uma conta? Clique aqui e registre-se agora</string>
+    <string name="text_sign_in">Já possui uma conta? Clique aqui e faça login</string>
+    <string name="text_posts">Publicações</string>
+    <string name="text_following">Seguindo</string>
+    <string name="text_followers">Seguidores</string>
+
+
+    <!-- BUTTONS TEXTS-->
+    <string name="deletar_post">Excluir Postagem</string>
+    <string name="button_text_entrar">Entrar</string>
+    <string name="button_text_registrar">Registrar</string>
+    <string name="button_text_editar_perfil">Editar perfil</string>
+    <string name="button_text_postar">Postar</string>
+    <string name="button_text_seguir">Seguir</string>
+    <string name="button_text_mensagem">Mensagem</string>
+    <string name="button_text_more">Mais</string>
+    <!-- HINT WIDGETS TEXTS-->
+    <string name="hint_senha">Senha</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_pesquisar">Pesquise</string>
+    <string name="hint_nome_sobrenome">Nome e sobrenome</string>
+    <string name="hint_nome_usuario">"@Seu nome de usuário" ex: @Marcos_1992</string>
+    <!-- PLACEHOLDER TEXTS-->
+    <string name="placeholder_desc">Descrição</string>
+    <string name="placeholder_name">Pedro Henrique</string>
+    <string name="placeholder_username">.@Pedro</string>
+    <string name="placeholder_bio">Programação :D -> HELLO WORLD</string>
+    <string name="placeholder_count_seguidores">100</string>
+    <string name="placeholder_count_seguindo">71</string>
+    <string name="placeholder_count_posts">3</string>
+
+
+
+
 </resources>

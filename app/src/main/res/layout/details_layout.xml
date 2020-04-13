@@ -19,12 +19,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="400dp"
                 android:cropToPadding="false"
-
                 android:scaleType="centerCrop"
                 app:srcCompat="@drawable/bg_gradient" />
-
-
-
 
 
         </androidx.appcompat.widget.LinearLayoutCompat>

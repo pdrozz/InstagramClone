@@ -38,7 +38,7 @@
                 android:layout_height="40dp"
                 android:layout_marginTop="8dp"
 
-                android:text="Pedro Henrique"
+                android:text="@string/placeholder_name"
                 android:textColor="#000000"
                 android:textSize="18sp"
                 android:textStyle="bold" />
@@ -48,7 +48,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="2dp"
-                android:text="'@pedro'"
+                android:text="@string/placeholder_username"
                 android:textSize="16sp" />
         </LinearLayout>
 

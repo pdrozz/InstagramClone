@@ -5,6 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+
+    <!-- TODO implement bio edit-->
     <EditText
         android:id="@+id/editBio"
         android:layout_width="0dp"

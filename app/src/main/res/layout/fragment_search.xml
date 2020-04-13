@@ -12,7 +12,7 @@
         android:drawableStart="@drawable/ic_search_24dp"
         android:ems="10"
         android:gravity="center_vertical"
-        android:hint="Pesquise"
+        android:hint="@string/hint_pesquisar"
         android:inputType="textPersonName"
         android:paddingStart="16dp"
         android:textColorHint="#616161"
