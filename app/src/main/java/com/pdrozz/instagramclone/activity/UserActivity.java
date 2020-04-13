@@ -64,9 +64,9 @@ public class UserActivity extends AppCompatActivity {
     private ChildEventListener childEventCountPosts;
     private ChildEventListener childEventPosts;
     //counts
-    private int countSeguidores=0;
-    private int countSeguindo=0;
-    private int countPosts=0;
+    private String countSeguidores;
+    private String countSeguindo;
+    private String countPosts;
     //btn seguir
     private int textbtn=0;
     //var
@@ -179,23 +179,23 @@ public class UserActivity extends AppCompatActivity {
             if (!user.getUrlfoto().equals("padrao")) {
                // Glide.with(this).load(user.getUrlfoto()).centerCrop().into(circleImageView);
             }
-           /* configChildEventCountSeguindo();
+            configChildEventCountSeguindo();
             configChildEventCountPosts();
-            configChildEventCountSeguidores();*/
+            configChildEventCountSeguidores();
 
             //getSupportActionBar().setTitle(user.getNickname());
-/*
-            queryCountSeguidores=reference.child("user").child(user.getId()).child("seguidores");
+
+            queryCountSeguidores=reference.child("seguidores").child(user.getId()).child("seguidores").child("seguidores_count");
             queryCountSeguidores.addChildEventListener(childEventCountSeguidores);
 
 
-            queryCountSeguindo=reference.child("user").child(user.getId()).child("seguindo");
+            queryCountSeguindo=reference.child("seguindo").child(user.getId()).child("seguindo").child("seguindo_count");
             queryCountSeguindo.addChildEventListener(childEventCountSeguindo);
 
 
-            queryCountPosts=reference.child("posts").child(user.getId());
+            queryCountPosts=reference.child("posts").child(user.getId()).child("posts").child("posts_count");
             queryCountPosts.addChildEventListener(childEventCountPosts);
-*/
+
 
             configButtonSeguirListener(user);
 
@@ -258,7 +258,8 @@ public class UserActivity extends AppCompatActivity {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 if (dataSnapshot.exists()){
-                    countPosts++;
+                    countPosts=dataSnapshot.getValue().toString();
+                    System.out.println(dataSnapshot.toString()+" MOSAICO");
                     posts.setText(countPosts+"");
                 }
             }
@@ -271,8 +272,9 @@ public class UserActivity extends AppCompatActivity {
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()){
-                    countPosts--;
+                    countPosts=dataSnapshot.getValue().toString();
                     posts.setText(countPosts+"");
+                    System.out.println(dataSnapshot.toString()+" MOSAICO");
                 }
             }
 
@@ -293,8 +295,9 @@ public class UserActivity extends AppCompatActivity {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 if (dataSnapshot.exists()){
-                    countSeguindo++;
-                    seguindo.setText(countSeguindo+"");
+                    countSeguindo=dataSnapshot.getValue().toString();
+                    seguindo.setText(countSeguindo);
+                    System.out.println(dataSnapshot.toString()+" MOSAICO");
                 }
             }
 
@@ -306,8 +309,9 @@ public class UserActivity extends AppCompatActivity {
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()){
-                    countSeguindo--;
-                    seguindo.setText(countSeguindo+"");
+                    countSeguindo=dataSnapshot.getValue().toString();
+                    seguindo.setText(countSeguindo);
+                    System.out.println(dataSnapshot.toString()+" MOSAICO");
                 }
             }
 
@@ -329,9 +333,9 @@ public class UserActivity extends AppCompatActivity {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 if (dataSnapshot.exists()){
-                    countSeguidores++;
-                    System.out.println("ALTERADO SEGUIDORES"+countSeguidores);
-                    seguidores.setText(countSeguidores+"");
+                    countSeguidores=dataSnapshot.getValue().toString();
+                    seguidores.setText(countSeguidores);
+                    System.out.println(dataSnapshot.toString()+" MOSAICO");
                 }
             }
 
@@ -343,9 +347,9 @@ public class UserActivity extends AppCompatActivity {
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()){
-                    countSeguidores=countSeguidores-1;
-                    System.out.println("ALTERADO SEGUIDORES"+countSeguidores);
-                    seguidores.setText(countSeguidores+"");
+                    countSeguidores=dataSnapshot.getValue().toString();
+                    seguidores.setText(countSeguidores);
+                    System.out.println(dataSnapshot.toString()+" MOSAICO");
                 }
             }
 
