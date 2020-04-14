@@ -5,17 +5,13 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -29,7 +25,6 @@ import com.pdrozz.instagramclone.model.FeedDataModel;
 import com.pdrozz.instagramclone.model.PostModel;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
@@ -38,6 +33,8 @@ public class HomeFragment extends Fragment {
     private ValueEventListener valueEventFeedListener;
     private ValueEventListener valueEventListener;
     private DatabaseReference databaseReference= FirebaseDatabase.getInstance().getReference();
+    private DatabaseReference refIndividualFeedPosts;//for individual getPosts
+    private Query queryFeed;//for get feed itemss list
 
     private String ID;
     private Activity activity;
@@ -59,14 +56,25 @@ public class HomeFragment extends Fragment {
 
         configEventFeed();
         configGetPostListener();
-        Query queryFeed=feedReference.child("feed");
+        queryFeed=feedReference.child("feed");
         queryFeed.orderByChild("data").addValueEventListener(valueEventFeedListener);
 
         return root;
     }
+
+    private void removeListeners(){
+        queryFeed.removeEventListener(valueEventFeedListener);
+        refIndividualFeedPosts.removeEventListener(valueEventListener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        removeListeners();
+    }
+
     private void configRecycler(View v){
         recyclerFeed=v.findViewById(R.id.recyclerFeed);
-
         layoutManager=new LinearLayoutManager(activity);
         recyclerFeed.setHasFixedSize(true);
         recyclerFeed.setLayoutManager(layoutManager);
@@ -78,10 +86,9 @@ public class HomeFragment extends Fragment {
         for (int position=0;position<listFeed.size();position++){
             System.out.println("for build start");
             FeedDataModel item=listFeed.get(position);
-            DatabaseReference ref=databaseReference.child("posts").child(item.getIdauthor())
+            refIndividualFeedPosts=databaseReference.child("posts").child(item.getIdauthor())
                     .child("posts").child(item.getIdpost());
-            System.out.println("REFERENCIA ITEM"+ref.toString());
-            ref.addValueEventListener(valueEventListener);
+            refIndividualFeedPosts.addValueEventListener(valueEventListener);
         }
 
     }
@@ -91,15 +98,26 @@ public class HomeFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()){
-                    PostModel post=dataSnapshot.getValue(PostModel.class);
-                    if (dataSnapshot.getKey()!=null){
-                        post.setIdpost(dataSnapshot.getKey());
+                    try{
+                        PostModel post=dataSnapshot.getValue(PostModel.class);
+                        if (post!=null){
+                            if (dataSnapshot.getKey()!=null){
+                                post.setIdpost(dataSnapshot.getKey());
+                            }else {
+                                Toast.makeText(activity,
+                                        "Ocorreu um erro ao recuperar o feed",
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        listPosts.add(post);
+                        adapter=new AdapterFeed(listPosts,activity);
+                        recyclerFeed.setAdapter(adapter);
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
+                        Toast.makeText(activity,
+                                "Ocorreu um erro ao recuperar o feed",
+                                Toast.LENGTH_SHORT).show();
                     }
-                    listPosts.add(post);
-                    //Collections.reverse(listPosts);
-                    adapter =new AdapterFeed(listPosts,activity);
-                    recyclerFeed.setAdapter(adapter);
-
                 }
             }
 
@@ -116,12 +134,9 @@ public class HomeFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     for (DataSnapshot children:dataSnapshot.getChildren()){
-                    FeedDataModel itemFeed=children.getValue(FeedDataModel.class);
-                    listFeed.add(itemFeed);
-                    System.out.println("gerando lista feed");
-                    System.out.println("gerando lista feed \n" + dataSnapshot.toString());
+                        FeedDataModel itemFeed=children.getValue(FeedDataModel.class);
+                        listFeed.add(itemFeed);
                 }
-                System.out.println("build feed");
                 buildFeed();
                 }
             }
