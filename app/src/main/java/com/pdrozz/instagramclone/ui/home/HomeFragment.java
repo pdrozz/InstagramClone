@@ -2,6 +2,7 @@ package com.pdrozz.instagramclone.ui.home;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,8 +64,13 @@ public class HomeFragment extends Fragment {
     }
 
     private void removeListeners(){
+        try{
         queryFeed.removeEventListener(valueEventFeedListener);
-        refIndividualFeedPosts.removeEventListener(valueEventListener);
+        refIndividualFeedPosts.removeEventListener(valueEventListener);}
+        catch (Exception e){
+            e.printStackTrace();
+            Log.e("error", "removeListeners: Erro ao remover listeners");
+        }
     }
 
     @Override

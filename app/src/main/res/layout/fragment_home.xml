@@ -11,15 +11,6 @@
         android:orientation="vertical">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="85dp"
-            android:scrollbars="horizontal"
-            tools:listitem="@layout/layout_story">
-
-        </androidx.recyclerview.widget.RecyclerView>
-
-        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerFeed"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

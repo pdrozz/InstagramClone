@@ -11,13 +11,13 @@
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="39dp"
         android:layout_marginTop="132dp"
         android:text="@string/instagram"
         android:textColor="#FFFFFF"
         android:textSize="52sp"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="@+id/textInputNomeSobrenome"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.textfield.TextInputLayout

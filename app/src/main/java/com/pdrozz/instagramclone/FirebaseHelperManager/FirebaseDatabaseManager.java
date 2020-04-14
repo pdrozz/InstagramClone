@@ -1,6 +1,7 @@
 package com.pdrozz.instagramclone.FirebaseHelperManager;
 
 import android.app.Activity;
+import android.provider.ContactsContract;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,6 +40,13 @@ public class FirebaseDatabaseManager {
         ).removeValue();
     }
 
+    public static String getCountStats(String IDuser){
+        DatabaseReference reference=FirebaseDatabase.getInstance().getReference();
 
+
+
+        return "";
+    }
 
 }
+

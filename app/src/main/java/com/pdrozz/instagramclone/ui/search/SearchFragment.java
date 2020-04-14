@@ -93,7 +93,7 @@ public class SearchFragment extends Fragment {
         recyclerUsuarioItemClickListener();
         recyclerTrendItemClickListener();
 
-        queryTrendsPosts.limitToFirst(12).addChildEventListener(childEventListenerTrendsPosts);
+        queryTrendsPosts.limitToFirst(20).addChildEventListener(childEventListenerTrendsPosts);
 
         recyclerView.addOnItemTouchListener(recyclerTrendItemClickListener);
 
@@ -112,6 +112,10 @@ public class SearchFragment extends Fragment {
                         Intent i=new Intent(getActivity(), PostDetailsActivity.class);
                         PostModel post=listPosts.get(position);
                         i.putExtra("user",post);
+                        i.putExtra("url",post.getUrlfoto());
+                        i.putExtra("author",post.getAuthor());
+                        i.putExtra("desc",post.getDesc());
+                        i.putExtra("tipo","trend");
                         startActivity(i);
                     }
 

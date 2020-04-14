@@ -38,7 +38,7 @@
     <!-- PLACEHOLDER TEXTS-->
     <string name="placeholder_desc">Descrição</string>
     <string name="placeholder_name">Pedro Henrique</string>
-    <string name="placeholder_username">.@Pedro</string>
+    <string name="placeholder_username">\@Pedro</string>
     <string name="placeholder_bio">Programação :D -> HELLO WORLD</string>
     <string name="placeholder_count_seguidores">100</string>
     <string name="placeholder_count_seguindo">71</string>

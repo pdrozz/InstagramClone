@@ -187,6 +187,7 @@ public class UserFragment extends Fragment {
                         Intent i=new Intent(activity, PostDetailsActivity.class);
                         i.putExtra("post",listPost.get(position));
                         i.putExtra("nome",nome.getText());
+                        i.putExtra("tipo",nome.getText());
                         startActivity(i);
 
                     }

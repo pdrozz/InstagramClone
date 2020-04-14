@@ -10,6 +10,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.pdrozz.instagramclone.R;
 import com.pdrozz.instagramclone.model.PostModel;
 import com.squareup.picasso.Picasso;
@@ -20,18 +21,33 @@ public class PostDetailsActivity extends AppCompatActivity {
     private ImageButton like,send,comment;
     private ImageView image;
     private TextView author,desc;
+
+    private String url, nome,sdesc;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_details);
 
+        configWidgets();
         Bundle dados=getIntent().getExtras();
         PostModel model=(PostModel)dados.get("post");
-        String nome=dados.getString("nome");
+        String tipoExibicao=dados.get("tipo").toString();
+
+        if (tipoExibicao.equals("trend")) {
+            url=dados.get("url").toString();
+            nome=dados.getString("author");
+            sdesc=dados.getString("desc");
+            desc.setText(sdesc);
+            author.setText(nome);
+            Glide.with(this).load(url).placeholder(R.drawable.bg_gradient).into(image);
+        }else{
+            author.setText(model.getAuthor());
+            Glide.with(this).load(model.getUrlfoto()).placeholder(R.drawable.bg_gradient).into(image);
+        }
 
        // System.out.println("DESESPERO url"+model.getUrlfoto());
 
-        configWidgets();
+
 
 
         like.setOnClickListener(new View.OnClickListener() {
@@ -52,8 +68,8 @@ public class PostDetailsActivity extends AppCompatActivity {
             }
         });
      //   desc.setText(model.getDesc()+"");
-        author.setText(nome);
-        Picasso.get().load(model.getUrlfoto()).placeholder(R.drawable.bg_gradient).into(image);
+
+
     }
 
 

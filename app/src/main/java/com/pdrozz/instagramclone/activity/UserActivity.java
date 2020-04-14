@@ -26,9 +26,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.pdrozz.instagramclone.R;
 import com.pdrozz.instagramclone.adapter.AdapterUserPost;
 import com.pdrozz.instagramclone.model.PostModel;
+import com.pdrozz.instagramclone.model.SeguidoresModel;
 import com.pdrozz.instagramclone.model.UserModel;
 import com.pdrozz.instagramclone.utils.Datetime;
 import com.pdrozz.instagramclone.helper.MyPreferences;
@@ -61,14 +63,13 @@ public class UserActivity extends AppCompatActivity {
     private Query queryCountPosts;
     private Query queryPosts;
     //listeners
-    private ChildEventListener childEventCountSeguidores;
-    private ChildEventListener childEventCountSeguindo;
-    private ChildEventListener childEventCountPosts;
+    private ValueEventListener valueEventListenerSeguidores;
+    private ValueEventListener valueEventListenerSeguindo;
     private ChildEventListener childEventPosts;
     //counts
-    private String countSeguidores;
-    private String countSeguindo;
-    private String countPosts;
+    private List<SeguidoresModel> listSeguidores=new ArrayList<>();
+    private boolean isFollowedByCurrentUser=false;
+    private String ID;
     //btn seguir
     private int textbtn=0;
     //var
@@ -82,10 +83,12 @@ public class UserActivity extends AppCompatActivity {
 
         user=(UserModel) dados.getSerializable("user");
         validateUserPerfil(user);
-
+        getUserValues();
 
         configWidgets();
-        loadUser();
+        configRecyclerPosts();
+        configCountListeners();
+        loadUserData();
         setupChildListenerPosts();
         configRecyclerPostClick();
 
@@ -99,12 +102,39 @@ public class UserActivity extends AppCompatActivity {
         queryPosts.addChildEventListener(childEventPosts);
 
     }
+
+    private void getUserValues(){
+        ID=MyPreferences.recuperarPreferencia(MyPreferences.idUser,this);
+    }
+
     private void validateUserPerfil(UserModel user){
         if (user==null){
             finish();
             Toast.makeText(this, "Houve um erro ao carregar o usuário", Toast.LENGTH_SHORT).show();
         }
     }
+
+    private void validateIsFollowedByCurrentUser(){
+        for(SeguidoresModel seguidor:listSeguidores){
+            if (seguidor.getId().equals(ID)){
+                isFollowedByCurrentUser=true;
+                seguir.setText("seguindo");
+                textbtn=1;
+            }
+        }
+    }
+
+    private void delete(){
+        for(int i=0;i<listSeguidores.size();i++){
+            if (listSeguidores.get(i).getId().equals(ID)){
+                listSeguidores.remove(i);
+                isFollowedByCurrentUser=false;
+                seguir.setText("seguir");
+            }
+        }
+    }
+
+
 
     private void configRecyclerPostClick(){
         recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getApplicationContext(), recyclerView,
@@ -114,6 +144,7 @@ public class UserActivity extends AppCompatActivity {
                         Intent i=new Intent(getApplicationContext(), PostDetailsActivity.class);
                         i.putExtra("post",listPost.get(position));
                         i.putExtra("nome",user.getNome());
+                        i.putExtra("tipo",user.getNome());
                         startActivity(i);
                     }
 
@@ -139,13 +170,10 @@ public class UserActivity extends AppCompatActivity {
                 listPost.add(model);
                 recyclerView.setAdapter(adapter);
                 adapter.notifyDataSetChanged();
+                posts.setText(listPost.size()+"");
             }
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                PostModel model=dataSnapshot.getValue(PostModel.class);
-                listPost.add(model);
-                recyclerView.setAdapter(adapter);
-                adapter.notifyDataSetChanged();
             }
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
@@ -157,8 +185,6 @@ public class UserActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         };
-
-        System.out.println("KEYKEY adicionado listener");
     }
 
     private void configWidgets(){
@@ -177,6 +203,11 @@ public class UserActivity extends AppCompatActivity {
         recyclerView=findViewById(R.id.recyclerUserPostagens);
         toolbar=findViewById(R.id.toolbarMain);
 
+
+
+    }
+
+    private void configRecyclerPosts(){
         adapter=new AdapterUserPost(listPost,this);
         layoutManager=new GridLayoutManager(getApplicationContext(),3);
         recyclerView.setLayoutManager(layoutManager);
@@ -184,32 +215,27 @@ public class UserActivity extends AppCompatActivity {
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setHasFixedSize(true);
         adapter.setHasStableIds(true);
-
     }
 
-    private void loadUser(){
+    private void configCountListeners(){
+        configValueEventSeguidores();
+        configValueEventSeguindo();
+    }
+
+    private void loadUserData(){
         if (user!=null){
             if (!user.getUrlfoto().equals("padrao")) {
                // Glide.with(this).load(user.getUrlfoto()).centerCrop().into(circleImageView);
             }
 
-
-            //getSupportActionBar().setTitle(user.getNickname());
-
-            queryCountSeguidores=reference.child("seguidores").child(user.getId()).child("seguidores").child("seguidores_count");
+            queryCountSeguidores=reference.child("seguidores").child(user.getId()).child("seguidores");
+            queryCountSeguidores.addValueEventListener(valueEventListenerSeguidores);
 
 
-
-            queryCountSeguindo=reference.child("seguindo").child(user.getId()).child("seguindo").child("seguindo_count");
-
-
-
-            queryCountPosts=reference.child("posts").child(user.getId()).child("posts").child("posts_count");
-
-
+            queryCountSeguindo=reference.child("seguindo").child(user.getId()).child("seguindo");
+            queryCountSeguindo.addValueEventListener(valueEventListenerSeguindo);
 
             configButtonSeguirListener(user);
-
 
             nome.setText(user.getNome());
             nickname.setText(user.getNickname());
@@ -222,9 +248,8 @@ public class UserActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        queryCountPosts.removeEventListener(childEventCountPosts);
-        queryCountSeguindo.removeEventListener(childEventCountSeguindo);
-        queryCountSeguidores.removeEventListener(childEventCountSeguidores);
+        //queryCountPosts.removeEventListener();
+
     }
 
     private void configButtonSeguirListener(final UserModel user){
@@ -237,11 +262,14 @@ public class UserActivity extends AppCompatActivity {
                 if(textbtn==0){
                     seguir.setText("Seguindo");
                     textbtn++;
+                    seguidores.setText((Integer.parseInt(seguidores.getText().toString())+1)+"");
                     follow(currentIdUser);
 
                 }else {
                     seguir.setText("Seguir");
                     textbtn--;
+                    delete();
+                    seguidores.setText((Integer.parseInt(seguidores.getText().toString())-1)+"");
                     unfollow(currentIdUser);
 
                 }
@@ -263,12 +291,48 @@ public class UserActivity extends AppCompatActivity {
                 .child("id").removeValue();
     }
 
+    private void configValueEventSeguidores(){
+        valueEventListenerSeguidores=new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                System.out.println("METAMETA "+dataSnapshot.toString());
+                if (dataSnapshot.exists()){
+                    int cseguidores=0;
+                    for (DataSnapshot seguidor:dataSnapshot.getChildren()){
+                        SeguidoresModel seguidoresModel=seguidor.getValue(SeguidoresModel.class);
+                        listSeguidores.add(seguidoresModel);
 
-      /*if (dataSnapshot.exists()){
-                    countPosts=dataSnapshot.getValue().toString();
-                    System.out.println(dataSnapshot.toString()+" MOSAICO");
-                    posts.setText(countPosts+"");
-                }*/
+                        cseguidores++;
+                    }
+                    seguidores.setText(cseguidores+"");
+                }
+                validateIsFollowedByCurrentUser();
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        };
+    }
+
+    private void configValueEventSeguindo(){
+        valueEventListenerSeguindo=new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                System.out.println("METAMETA "+dataSnapshot.toString());
+                if (dataSnapshot.exists()){
+                    int cseguidores=0;
+                    for (DataSnapshot seguindo:dataSnapshot.getChildren()){
+                        cseguidores++;
+                    }
+                    seguindo.setText(cseguidores+"");
+                }
+
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        };
+    }
 
 
 
