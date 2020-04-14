@@ -38,7 +38,7 @@ Bom, no início do projeto o foco estava em entender como seriam os dados armaze
 
 Enquanto desenvolvia as telas e os implementava os métodos para fazer os posts, sign up e follow, surgiu a principal questão, como faria o feed dos usuários? Considerando que estava apenas usando o Realtime Database e o Firebase Storage, podia fazer uma gambiarra e fazer o usuário salvar o post no nó feed de cada seguidor.
 
-Então resolvi usar o Firebase Functions com o node.js para criar um trigger que ficava esperando uma mudança no nó post de cada usuário e quando essa mudança acontece ele recupera a lista de seguidores e então gera um feed personalzido para cada usuário, aproveitando que estava com a mão na massa aproveitei e criei um trigger que contava os post, seguidores e quantas pessoas o usuário segue para poder só recuperar o valor pelo client depois.
+Então resolvi usar o Firebase Functions com o node.js para criar um trigger que ficava esperando uma mudança no nó post de cada usuário e quando essa mudança acontece ele recupera a lista de seguidores e então gera um feed personalizado para cada usuário, aproveitando que estava com a mão na massa aproveitei e criei um trigger que contava os post, seguidores e quantas pessoas o usuário segue para poder só recuperar o valor pelo client depois.
 
 # HowToUse
 
