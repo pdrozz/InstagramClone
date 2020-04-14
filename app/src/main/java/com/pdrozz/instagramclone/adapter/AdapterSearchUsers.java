@@ -37,12 +37,8 @@ public class AdapterSearchUsers extends RecyclerView.Adapter<AdapterSearchUsers.
     @Override
     public void onBindViewHolder(@NonNull MeuViewHolderSearchUsers holder, int position) {
         UserModel user=listUsers.get(position);
-        if(user.getUrlfoto().equals("padrao")) {
+        Glide.with(c).load(user.getUrlfoto()).into(holder.iconPerfil);
 
-        }
-        else {
-            Glide.with(c).load(user.getUrlfoto()).into(holder.iconPerfil);
-        }
         holder.nickname.setText(user.getNickname());
         holder.nome.setText(user.getNome());
 

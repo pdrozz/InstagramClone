@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.database.ChildEventListener;
@@ -32,6 +33,7 @@ import com.pdrozz.instagramclone.model.UserModel;
 import com.pdrozz.instagramclone.utils.Datetime;
 import com.pdrozz.instagramclone.helper.MyPreferences;
 import com.pdrozz.instagramclone.helper.RecyclerItemClickListener;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,7 +79,11 @@ public class UserActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user);
         Bundle dados=getIntent().getExtras();
+
         user=(UserModel) dados.getSerializable("user");
+        validateUserPerfil(user);
+
+
         configWidgets();
         loadUser();
         setupChildListenerPosts();
@@ -86,13 +92,20 @@ public class UserActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        //Picasso.get().load(Uri.parse(user.getUrlfoto())).placeholder(R.drawable.bg_gradient).into(circleImageView);
         Glide.with(this).load(user.getUrlfoto()).into(circleImageView);
-
 
         queryPosts=reference.child("posts").child(user.getId()).child("posts");
         queryPosts.addChildEventListener(childEventPosts);
 
     }
+    private void validateUserPerfil(UserModel user){
+        if (user==null){
+            finish();
+            Toast.makeText(this, "Houve um erro ao carregar o usuário", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     private void configRecyclerPostClick(){
         recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getApplicationContext(), recyclerView,
                 new RecyclerItemClickListener.OnItemClickListener() {
@@ -179,22 +192,20 @@ public class UserActivity extends AppCompatActivity {
             if (!user.getUrlfoto().equals("padrao")) {
                // Glide.with(this).load(user.getUrlfoto()).centerCrop().into(circleImageView);
             }
-            configChildEventCountSeguindo();
-            configChildEventCountPosts();
-            configChildEventCountSeguidores();
+
 
             //getSupportActionBar().setTitle(user.getNickname());
 
             queryCountSeguidores=reference.child("seguidores").child(user.getId()).child("seguidores").child("seguidores_count");
-            queryCountSeguidores.addChildEventListener(childEventCountSeguidores);
+
 
 
             queryCountSeguindo=reference.child("seguindo").child(user.getId()).child("seguindo").child("seguindo_count");
-            queryCountSeguindo.addChildEventListener(childEventCountSeguindo);
+
 
 
             queryCountPosts=reference.child("posts").child(user.getId()).child("posts").child("posts_count");
-            queryCountPosts.addChildEventListener(childEventCountPosts);
+
 
 
             configButtonSeguirListener(user);
@@ -253,116 +264,12 @@ public class UserActivity extends AppCompatActivity {
     }
 
 
-    private void configChildEventCountPosts(){
-        childEventCountPosts=new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                if (dataSnapshot.exists()){
+      /*if (dataSnapshot.exists()){
                     countPosts=dataSnapshot.getValue().toString();
                     System.out.println(dataSnapshot.toString()+" MOSAICO");
                     posts.setText(countPosts+"");
-                }
-            }
+                }*/
 
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()){
-                    countPosts=dataSnapshot.getValue().toString();
-                    posts.setText(countPosts+"");
-                    System.out.println(dataSnapshot.toString()+" MOSAICO");
-                }
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        };
-    }
-
-    private void configChildEventCountSeguindo(){
-        childEventCountSeguindo=new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                if (dataSnapshot.exists()){
-                    countSeguindo=dataSnapshot.getValue().toString();
-                    seguindo.setText(countSeguindo);
-                    System.out.println(dataSnapshot.toString()+" MOSAICO");
-                }
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()){
-                    countSeguindo=dataSnapshot.getValue().toString();
-                    seguindo.setText(countSeguindo);
-                    System.out.println(dataSnapshot.toString()+" MOSAICO");
-                }
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        };
-    }
-
-    private void configChildEventCountSeguidores(){
-
-        childEventCountSeguidores=new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                if (dataSnapshot.exists()){
-                    countSeguidores=dataSnapshot.getValue().toString();
-                    seguidores.setText(countSeguidores);
-                    System.out.println(dataSnapshot.toString()+" MOSAICO");
-                }
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()){
-                    countSeguidores=dataSnapshot.getValue().toString();
-                    seguidores.setText(countSeguidores);
-                    System.out.println(dataSnapshot.toString()+" MOSAICO");
-                }
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        };
-    }
 
 }

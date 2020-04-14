@@ -152,7 +152,12 @@ public class UserFragment extends Fragment {
         uriFotoPerfil=MyPreferences.recuperarPreferencia(MyPreferences.uriFotoPerfil,activity);
 
         File file=new File(getContext().getFilesDir(),"image_profile.jpeg");
-        Glide.with(getActivity()).load(file).into(ImageViewProfile);
+        if(file.exists()){
+            Glide.with(getActivity()).load(file).into(ImageViewProfile);
+        }else if(!uriFotoPerfil.equals("default")) {
+            Glide.with(getActivity()).load(uriFotoPerfil).into(ImageViewProfile);
+        }
+
 
         String stringNome=MyPreferences.recuperarPreferencia(MyPreferences.nome,activity);
         nome.setText(stringNome);

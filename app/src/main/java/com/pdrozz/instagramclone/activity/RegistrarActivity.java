@@ -25,7 +25,7 @@ import com.pdrozz.instagramclone.utils.TextFormat;
 public class RegistrarActivity extends AppCompatActivity {
 
     //widgets
-    private EditText email,senha,nickname,nome;
+    private EditText email,senha,nickname,nome,bio;
     private Button btnRegistrar;
 
     private String UID;
@@ -45,6 +45,7 @@ public class RegistrarActivity extends AppCompatActivity {
         senha=findViewById(R.id.txtPasswordRegistrar);
         nickname=findViewById(R.id.txtNomedeUsuario);
         nome=findViewById(R.id.txtNome);
+        bio=findViewById(R.id.txtCadastrarBio);
         btnRegistrar=findViewById(R.id.btnRegistar);
 
         btnRegistrar.setOnClickListener(new View.OnClickListener() {
@@ -80,7 +81,8 @@ public class RegistrarActivity extends AppCompatActivity {
                                 UID=authResult.getUser().getUid();
                                 model.setNickname(stringNickname);
                                 model.setNome(stringNome);
-                                String[] dados={UID,stringEmail,stringNickname};
+                                model.setBio(bio.getText().toString());
+                                String[] dados={UID,stringEmail,stringNickname,bio.getText().toString()};
                                 salvarDadosPreferences(dados);
                                 setDados(model);
                             }
@@ -94,6 +96,7 @@ public class RegistrarActivity extends AppCompatActivity {
         MyPreferences.salvarPreferencia(MyPreferences.idUser,dados[0],this);
         MyPreferences.salvarPreferencia(MyPreferences.email,dados[1],this);
         MyPreferences.salvarPreferencia(MyPreferences.nickname,dados[2],this);
+        MyPreferences.salvarPreferencia(MyPreferences.bio,dados[3],this);
     }
 
     private void setDados(UserModel model){

@@ -3,6 +3,7 @@ package com.pdrozz.instagramclone.activity;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -28,6 +29,8 @@ public class PostDetailsActivity extends AppCompatActivity {
         PostModel model=(PostModel)dados.get("post");
         String nome=dados.getString("nome");
 
+       // System.out.println("DESESPERO url"+model.getUrlfoto());
+
         configWidgets();
 
 
@@ -48,7 +51,7 @@ public class PostDetailsActivity extends AppCompatActivity {
                 }
             }
         });
-        desc.setText(model.getDesc());
+     //   desc.setText(model.getDesc()+"");
         author.setText(nome);
         Picasso.get().load(model.getUrlfoto()).placeholder(R.drawable.bg_gradient).into(image);
     }
