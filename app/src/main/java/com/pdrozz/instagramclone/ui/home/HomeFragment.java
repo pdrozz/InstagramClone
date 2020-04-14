@@ -20,6 +20,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.pdrozz.instagramclone.R;
 import com.pdrozz.instagramclone.adapter.AdapterFeed;
@@ -28,12 +29,13 @@ import com.pdrozz.instagramclone.model.FeedDataModel;
 import com.pdrozz.instagramclone.model.PostModel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
 
 
-    private ChildEventListener childEventListenerFeed;
+    private ValueEventListener valueEventFeedListener;
     private ValueEventListener valueEventListener;
     private DatabaseReference databaseReference= FirebaseDatabase.getInstance().getReference();
 
@@ -53,11 +55,12 @@ public class HomeFragment extends Fragment {
         ID= MyPreferences.recuperarPreferencia(MyPreferences.idUser,activity);
         configRecycler(root);
 
-        DatabaseReference feedReference=databaseReference.child("feed").child(ID).child("feed");
+        DatabaseReference feedReference=databaseReference.child("feed").child(ID);
 
-        configGetFeedListener();
+        configEventFeed();
         configGetPostListener();
-        feedReference.orderByChild("data").addChildEventListener(childEventListenerFeed);
+        Query queryFeed=feedReference.child("feed");
+        queryFeed.orderByChild("data").addValueEventListener(valueEventFeedListener);
 
         return root;
     }
@@ -89,13 +92,11 @@ public class HomeFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()){
                     PostModel post=dataSnapshot.getValue(PostModel.class);
-                    post.setIdpost(dataSnapshot.getKey());
+                    if (dataSnapshot.getKey()!=null){
+                        post.setIdpost(dataSnapshot.getKey());
+                    }
                     listPosts.add(post);
-                    System.out.println("POST ADICIONADO DADOS:");
-                    System.out.println(""+post.getUrlfoto());
-                    System.out.println(""+post.getDesc());
-                    System.out.println(""+post.getData());
-
+                    //Collections.reverse(listPosts);
                     adapter =new AdapterFeed(listPosts,activity);
                     recyclerFeed.setAdapter(adapter);
 
@@ -109,32 +110,20 @@ public class HomeFragment extends Fragment {
         };
     }
 
-    private void configGetFeedListener(){
-        childEventListenerFeed=new ChildEventListener() {
+    private void configEventFeed(){
+        valueEventFeedListener=new ValueEventListener() {
             @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                        FeedDataModel itemFeed=dataSnapshot.getValue(FeedDataModel.class);
-                        listFeed.add(itemFeed);
+                    for (DataSnapshot children:dataSnapshot.getChildren()){
+                    FeedDataModel itemFeed=children.getValue(FeedDataModel.class);
+                    listFeed.add(itemFeed);
                     System.out.println("gerando lista feed");
+                    System.out.println("gerando lista feed \n" + dataSnapshot.toString());
                 }
                 System.out.println("build feed");
                 buildFeed();
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
+                }
             }
 
             @Override
@@ -143,5 +132,8 @@ public class HomeFragment extends Fragment {
             }
         };
 
+
     }
+
+
 }
