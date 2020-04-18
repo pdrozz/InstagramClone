@@ -77,7 +77,7 @@ Windows:
         
       "trends":{
         ".write":false
-      },//end trends
+      },
         
       "seguindo":{
         "$uid":{
@@ -102,8 +102,8 @@ Windows:
 
 6. Edit rules of Firebase Storage, ensure that only authenticated users have access to images
 
-```bash
-rules_version = '2'; #Current version
+```js
+rules_version = '2'; //Current version
 service firebase.storage {
   match /b/{bucket}/o {
     match /{allPaths=**} {
@@ -119,26 +119,27 @@ service firebase.storage {
 
 # FeedWithNodejs
 #### How generate/build a feed similiar instagram and facebook with node.js, Firebase Functions and Firebase Realtime Database
+[Tutorial in english](https://github.com/pdrozz/post_feed_nodejs)
 
-```bash
+```js
 
-#generate the Individual Feed
-#trigger when new post is created
+//generate the Individual Feed
+//trigger when new post is created
   exports.newposts = functions.database.ref('/posts/{userpid}/posts/{idpost}').onCreate((snap,context)=>{
 
-    #get idUser and idPost
+    //get idUser and idPost
     let iddousuario=context.params.userpid;
     let idddopost=context.params.idpost;
     const globaltime=999999999999999;
 
-    #get list of followers
+    //get list of followers
     const seguidores = db.ref(`seguidores/${iddousuario}/seguidores/`).on('child_added',function(params) {
       var seguidor = params.val();
       var idseguidor=seguidor.id;
     
       var feedref=db.ref(`feed/${idseguidor}/feed`);
       
-      #set reference of posts in feed of follower
+      //set reference of posts in feed of follower
       feedref.child(idddopost).set(
         {
           idpost:idddopost,
@@ -155,4 +156,4 @@ service firebase.storage {
     var localdate = dNow.getFullYear() + '-' + (dNow.getMonth()+1) + '-' +  dNow.getDate() + ' ' + dNow.getHours() + ':' + dNow.getMinutes();
     return localdate;
   }  
-´´´
+```
